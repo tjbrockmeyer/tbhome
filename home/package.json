@@ -52,6 +52,7 @@
     "sass-loader": "7.1.0",
     "semver": "6.0.0",
     "style-loader": "0.23.1",
+    "superagent": "^5.0.6",
     "terser-webpack-plugin": "1.2.3",
     "ts-pnp": "1.1.2",
     "url-loader": "1.1.2",
@@ -128,8 +129,18 @@
   },
   "babel": {
     "plugins": [
-      ["@babel/plugin-proposal-decorators", { "decoratorsBeforeExport": false}],
-      ["@babel/plugin-proposal-class-properties", { "loose" : true }]
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "decoratorsBeforeExport": false
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
     ],
     "presets": [
       "react-app"
