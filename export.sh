@@ -5,11 +5,13 @@ cd ./home/build && \
 npm run build && \
 zip -r ./build.zip ./* && \
 scp ./build.zip pi:/tmp/tb.home-home.zip && \
+rm ./build.zip && \
 
 # Copy the API project onto the Pi
 cd ../../api && \
 zip -r ./api.zip src index.js package.json && \
 scp ./api.zip pi:/home/pi/Coding/node.js/api.zip && \
+rm ./api.zip && \
 
 ssh pi "\
   # Move the React project from /tmp/ to the Apache2 folder and unzip it.
