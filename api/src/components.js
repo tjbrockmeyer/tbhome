@@ -1,36 +1,33 @@
 
 const {
   convertComponentsToRefs, ref,
-  parameter, body, response, authorization
+  parameterDoc, requestBodyDoc, responseDoc, authDoc,
 } = require('@brockmeyer-tyler/openapi3/components');
+const {token} = require('./constants');
+
+
+const securitySchemes = {};
+securitySchemes[token.name] = authDoc('apiKey', 'x-access-token', 'header', 'Token received from logging in');
 
 module.exports = {
-  securitySchemes: {
-    token: authorization('apiKey', 'x-access-token', 'header', 'Token received from logging in')
-  },
+  securitySchemes,
 
   parameters: {
     path: {
       $container: true,
-      listName: parameter('listName', 'path', 'Name of the list to target', true, {type: 'string'})
+      listName: parameterDoc('listName', 'path', 'Name of the list to target', true, {type: 'string'})
     }
   },
 
   requestBodies: {
-    addItem: body('Information about the item to be added to this list', true, ref('list/item/create')),
+
   },
 
   responses: {
-    badRequest: response('Bad Request', ref('error')),
-    error: response('Internal Server Error', ref('error')),
-    unauthenticated: response('Unauthenticated'),
-    forbidden: response('Forbidden'),
-    list: {
-      $container: true,
-      obj: response('Found', ref('list/obj')),
-      created: response('List successfully created'),
-      submitted: response('Item successfully submitted'),
-    }
+    badRequest: responseDoc('Bad Request', ref('error')),
+    error: responseDoc('Internal Server Error', ref('error')),
+    unauthenticated: responseDoc('Unauthenticated'),
+    forbidden: responseDoc('Forbidden'),
   },
 
   schemas: {

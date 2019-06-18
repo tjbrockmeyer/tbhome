@@ -3,7 +3,7 @@ const ezjwt = require('@brockmeyer-tyler/ezjwt');
 
 
 module.exports = {
-  requireAuth(scope) {
+  requireAuth(scopes) {
     return async function (req, res, next) {
       const token = req.get('x-access-token');
       if(!token) {

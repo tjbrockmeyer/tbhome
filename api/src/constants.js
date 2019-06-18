@@ -6,8 +6,12 @@ let
   apiPath = '/call',
   docsPath = '/docs',
   debug = true,
-  scopes = {
-    create: 'CREATE'
+  token = {
+    name: 'token',
+    scopes: {
+      create: 'CREATE',
+      delete: 'DELETE',
+    }
   };
 
 
@@ -25,5 +29,5 @@ module.exports = {
   apiPath,
   docsPath,
   debug,
-  scopes,
+  token,
 };

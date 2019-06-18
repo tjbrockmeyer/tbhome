@@ -1,7 +1,7 @@
 
 const {OpenApi3, server, tag} = require('@brockmeyer-tyler/openapi3');
 const express = require('express');
-const {host, port, basePath, apiPath, docsPath, debug} = require('./src/constants');
+const {host, port, basePath, apiPath, docsPath, debug, token} = require('./src/constants');
 const components = require('./src/components');
 express.Router().get('/', (req, res, next) => {});
 const endpoints = require('./src/endpoints');
@@ -12,9 +12,12 @@ endpoints.forEach(e => {
   e.response(500, components.responses.error);
   e.response(400, components.responses.badRequest);
   if(e.doc.security.length) {
-    e.middleware(middleware.requireAuth(e.doc.security[0]['token'][0]));
-    e.response(501, components.responses.unauthenticated);
-    e.response(503, components.responses.forbidden);
+    const scopes = e.doc.security[0][token.name];
+    e.middleware(middleware.requireAuth(scopes));
+    e.response(401, components.responses.unauthenticated);
+    if(scopes.length) {
+      e.response(403, components.responses.forbidden);
+    }
   }
 });
 require('@brockmeyer-tyler/ezjwt').config({debug});
