@@ -8,7 +8,7 @@ const unwrappedQueries = {};
 
 class PSQLError extends Error {
   constructor(error) {
-    super();
+    super(error.message);
     const msg = error.message;
     if(msg.includes('ECONNREFUSED')) {
       this.code = 'CONNECTION';

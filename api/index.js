@@ -6,8 +6,12 @@ const components = require('./src/components');
 express.Router().get('/', (req, res, next) => {});
 const endpoints = require('./src/endpoints');
 const middleware = require('./src/middleware');
+const {initQueries, start} = require('./psql-client');
+const queries = require('./src/queries');
 
 
+start('192.168.0.6', 5432, 'postgres', 'psql123', 'home');
+initQueries(queries);
 endpoints.forEach(e => {
   e.response(500, components.responses.error);
   e.response(400, components.responses.badRequest);

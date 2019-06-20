@@ -7,7 +7,7 @@ module.exports = {
     return async function (req, res, next) {
       const token = req.get('x-access-token');
       if(!token) {
-        res.status(501).send();
+        res.status(401).send();
       } else {
         req.token = ezjwt.decode(token);
         next();
