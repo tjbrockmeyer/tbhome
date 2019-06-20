@@ -8,20 +8,25 @@ const unwrappedQueries = {};
 
 class PSQLError extends Error {
   constructor(error) {
-    super(error.message);
-    const msg = error.message;
-    if(msg.includes('ECONNREFUSED')) {
-      this.code = 'CONNECTION';
+    super();
+    this.message = 'a database error occurred';
+    this.details = error.message;
+    if(error.message.includes('ECONNREFUSED')) {
+      this.code = PSQLError.codes.connection;
       this.message = "could not connect to the database";
-      this.details = msg;
+      this.details = error.message;
     }
-    if(msg.includes('already exists')) {
-      this.code = 'CONFLICT';
+    if(error.message.includes('violates unique constraint')) {
+      this.code = PSQLError.codes.conflict;
       this.message = "inserting the given data resulted in a conflict";
-      this.details = msg;
+      this.details = error.message;
     }
   }
 }
+PSQLError.codes = {
+  conflict: 'CONFLICT',
+  connection: 'CONNECTION',
+};
 
 function formatParam(param) {
   if(typeof param === 'string') {

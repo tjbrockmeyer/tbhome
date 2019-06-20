@@ -41,11 +41,19 @@ module.exports = {
     },
     list: {
       $container: true,
+      create: {
+        type: 'object',
+        properties: {
+          description: {type: 'string'}
+        }
+      },
       obj: {
         type: 'object',
         required: ['name', 'items'],
         properties: {
           name: {type: 'string'},
+          description: {type: 'string'},
+          closeDate: {type: 'string', format: 'dateTime'},
           items: {
             type: 'array',
             items: ref('list/item/obj'),
@@ -56,21 +64,17 @@ module.exports = {
         $container: true,
         obj: {
           type: 'object',
-          required: ['id', 'title'],
+          required: ['name'],
           properties: {
-            id: {type: 'integer'},
-            title: {type: 'string'},
+            name: {type: 'string'},
             description: {type: 'string'},
-            additionalInfo: {type: 'string'},
           }
         },
-        create: {
+        delete: {
           type: 'object',
-          required: ['title'],
+          required: ['name'],
           properties: {
-            title: {type: 'string'},
-            description: {type: 'string'},
-            additionalInfo: {type: 'string'},
+            name: {type: 'string'},
           }
         },
       }

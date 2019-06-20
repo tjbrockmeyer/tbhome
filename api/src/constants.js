@@ -3,7 +3,7 @@ let
   host = 'localhost',
   port = 3001,
   basePath = '/api',
-  apiPath = '/call',
+  apiPath = '/rest',
   docsPath = '/docs',
   debug = true,
   token = {

@@ -1,5 +1,6 @@
 
 const ezjwt = require('@brockmeyer-tyler/ezjwt');
+const {PSQLError} = require('../psql-client');
 
 
 module.exports = {
@@ -19,6 +20,19 @@ module.exports = {
   async errorHandler(err, req, res, next) {
     console.error(err);
     res.status(500).json({message: 'Internal Server Error'});
+  },
+  async errorResponseHandler(req, resObj, err) {
+    if(err) {
+      if(err instanceof PSQLError) {
+        if(err.code === PSQLError.codes.conflict) {
+          resObj.body = undefined;
+          resObj.status = 409;
+        } else if(err.code === PSQLError.codes.connection) {
+          resObj.body = {message: 'could not connect to the database', details: err.message};
+          resObj.status = 500;
+        }
+      }
+    }
   }
 };
 

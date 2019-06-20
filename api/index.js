@@ -3,7 +3,6 @@ const {OpenApi3, server, tag} = require('@brockmeyer-tyler/openapi3');
 const express = require('express');
 const {host, port, basePath, apiPath, docsPath, debug, token} = require('./src/constants');
 const components = require('./src/components');
-express.Router().get('/', (req, res, next) => {});
 const endpoints = require('./src/endpoints');
 const middleware = require('./src/middleware');
 const {initQueries, start} = require('./psql-client');
@@ -15,6 +14,7 @@ initQueries(queries);
 endpoints.forEach(e => {
   e.response(500, components.responses.error);
   e.response(400, components.responses.badRequest);
+  e.onResponse(middleware.errorResponseHandler);
   if(e.doc.security.length) {
     const scopes = e.doc.security[0][token.name];
     e.middleware(middleware.requireAuth(scopes));

@@ -9,19 +9,14 @@ module.exports = [
     'POST', '/list/{listName}', 'List', 'Create a list', 'Create a new list.')
     //.security(token.name, token.scopes.create)
     .param(parameters.path.listName)
-    .body(requestBodyDoc('the description of the list', false, {type: 'object'}))
+    .body(requestBodyDoc('the description of the list', false, schemas.list.create))
     .response(200, responseDoc('Successfully created the list'))
     .response(409, responseDoc('That list already exists'))
     .func(async req => {
       const name = req.params.listName;
       const description = req.body.description;
 
-      try {
-          await queries.createList(name, description);
-      } catch(err) {
-          console.error(err);
-          return new Response(500, {message: err.message});
-      }
+      await queries.createList(name, description);
     }),
 /*
   new Endpoint(
