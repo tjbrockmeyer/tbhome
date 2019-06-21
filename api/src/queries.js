@@ -5,4 +5,4 @@ module.exports = {
             'values($1, $2, $3)', [listName, new Date(0, 0, 0, 0, 0, 0, 0), description]
         ]
     }
-}
+};

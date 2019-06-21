@@ -5,7 +5,7 @@ const {host, port, basePath, apiPath, docsPath, debug, token} = require('./src/c
 const components = require('./src/components');
 const endpoints = require('./src/endpoints');
 const middleware = require('./src/middleware');
-const {initQueries, start} = require('./psql-client');
+const {initQueries, start} = require('@brockmeyer-tyler/psql-client');
 const queries = require('./src/queries');
 
 
