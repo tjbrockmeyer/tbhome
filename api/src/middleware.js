@@ -1,6 +1,6 @@
 
 const ezjwt = require('@brockmeyer-tyler/ezjwt');
-const {PSQLError} = require('../psql-client');
+const {PSQLError} = require('@brockmeyer-tyler/psql-client');
 
 
 module.exports = {
