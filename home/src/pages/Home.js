@@ -2,6 +2,7 @@
 import React from 'react';
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Link} from "react-router-dom";
+import Paper from "@material-ui/core/Paper";
 
 
 export default
@@ -14,9 +15,18 @@ class Home extends React.Component {
   render() {
     return <div>
       <h1>Home</h1>
-      <Link to='/calendar'>Calendar</Link>
-      <Link to='/groceries'>Groceries</Link>
-      <Link to='/chores'>Chores</Link>
+      <lt>
+        <li>
+          <Link to='/calendar'>Calendar</Link>
+        </li>
+        <li>
+          <Link to='/groceries'>Groceries</Link>
+        </li>
+        <li>
+          <Link to='/chores'>Chores</Link>
+        </li>
+      </lt>
+
     </div>
   }
 }
