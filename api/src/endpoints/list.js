@@ -1,8 +1,20 @@
 
-const {Endpoint, Response, responseDoc, requestBodyDoc} = require('@brockmeyer-tyler/openapi3');
+const {Endpoint, Response, responseDoc, requestBodyDoc, parameterDoc} = require('@brockmeyer-tyler/openapi3');
 const {parameters, responses, schemas} = require('../components');
 const {token} = require('../constants');
 const queries = require('../queries');
+
+
+function convertList(rows) {
+  const zeroDate = new Date(0, 0, 0, 0, 0, 0, 1);
+  return rows.map(l => ({
+    id: l.id,
+    name: l.name,
+    closeDate: l.close_date < zeroDate ? undefined : l.close_date,
+    description: l.description,
+  }));
+}
+
 
 module.exports = [
   new Endpoint(
@@ -18,17 +30,42 @@ module.exports = [
 
       await queries.createList(name, description);
     }),
-/*
-  new Endpoint(
-    'GET', '/list/{listName}', 'List', 'Retrieve a list for viewing',
-    'Retrieve a list and all of its contents.')
-    .security(token.name)
-    .param(parameters.path.listName)
-    .response(200, responseDoc('List found', schemas.list.obj))
-    .func(req => {
 
+  new Endpoint(
+    'GET', '/list', 'List', 'View all lists, or filter them down',
+    'Retrieve a list and all of its contents.')
+    // .security(token.name)
+    .param(parameterDoc('listName', 'query', 'The name of the list', false, {type: 'string'}))
+    .param(parameterDoc('date', 'query', 'The date of the list (used for retrieving closed lists)', false, {type: 'string', format: 'dateTime'}))
+    .response(200, responseDoc('List found', schemas.list.listOfLists))
+    .response(204, responseDoc('No list could be found'))
+    .func(async req => {
+      const {listName, openOnly, closeDate} = req.query;
+      const result = await queries.getLists(listName, openOnly, closeDate);
+      if(!result.rows.length) {
+        return new Response(204);
+      }
+      return convertList(result.rows);
     }),
 
+
+  new Endpoint(
+    'GET', '/list/id/{listId}', 'List', 'Retrieve a list for viewing',
+    'Retrieve a list and all of its contents.')
+  // .security(token.name)
+    .param(parameterDoc('listId', 'path', 'The unique ID of a list', true, {type: 'integer'}))
+    .response(200, responseDoc('List found', schemas.list.listOfLists))
+    .response(204, responseDoc('No list could be found'))
+    .func(async req => {
+      const {listId} = req.params;
+      const result = await queries.getListByID(listId);
+      if(!result.rows.length) {
+        return new Response(204);
+      }
+      return convertList(result.rows)[0];
+    }),
+
+  /*
   new Endpoint(
     'DELETE', '/list/{listName}', 'List', 'Delete an existing list',
     'Delete a list and all of the items on it - permanently.')

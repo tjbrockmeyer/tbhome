@@ -32,6 +32,7 @@ module.exports = {
           resObj.status = 500;
         }
       }
+      console.error(err)
     }
   }
 };

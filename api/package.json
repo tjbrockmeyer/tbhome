@@ -10,8 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@brockmeyer-tyler/ezjwt": "^1.0.1",
-    "@brockmeyer-tyler/openapi3": "^1.2.3",
-    "@brockmeyer-tyler/psql-client": "^1.0.0",
+    "@brockmeyer-tyler/openapi3": "^1.2.4",
+    "@brockmeyer-tyler/psql-client": "^1.0.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^1.19.1",

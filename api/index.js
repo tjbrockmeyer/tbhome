@@ -9,19 +9,14 @@ const {initQueries, start} = require('@brockmeyer-tyler/psql-client');
 const queries = require('./src/queries');
 
 
-start('192.168.0.6', 5432, 'postgres', 'psql123', 'home');
+start('192.168.0.6', 5432, 'postgres', 'psql123', 'home', {logLevel: 1});
 initQueries(queries);
 endpoints.forEach(e => {
-  e.response(500, components.responses.error);
   e.response(400, components.responses.badRequest);
   e.onResponse(middleware.errorResponseHandler);
   if(e.doc.security.length) {
     const scopes = e.doc.security[0][token.name];
     e.middleware(middleware.requireAuth(scopes));
-    e.response(401, components.responses.unauthenticated);
-    if(scopes.length) {
-      e.response(403, components.responses.forbidden);
-    }
   }
 });
 require('@brockmeyer-tyler/ezjwt').config({debug});

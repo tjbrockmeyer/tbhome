@@ -50,8 +50,9 @@ module.exports = {
       },
       obj: {
         type: 'object',
-        required: ['name', 'items'],
+        required: ['id', 'name'],
         properties: {
+          id: {type: 'integer'},
           name: {type: 'string'},
           description: {type: 'string'},
           closeDate: {type: 'string', format: 'dateTime'},
@@ -60,6 +61,10 @@ module.exports = {
             items: ref('list/item/obj'),
           }
         }
+      },
+      listOfLists: {
+        type: 'array',
+        items: ref('list/obj')
       },
       item: {
         $container: true,
