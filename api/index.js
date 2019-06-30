@@ -1,6 +1,7 @@
 
 const {OpenApi3, server, tag} = require('@brockmeyer-tyler/openapi3');
 const express = require('express');
+const cors = require('cors');
 const {host, port, basePath, apiPath, docsPath, debug, token} = require('./src/constants');
 const components = require('./src/components');
 const endpoints = require('./src/endpoints');
@@ -33,6 +34,7 @@ router.use(apiPath, spec.apiRouter);
 router.use(middleware.errorHandler);
 
 const app = express();
+app.use(cors());
 app.use(basePath, router);
 app.listen(port, host, () => {
   console.log(`UI at: http://${host}:${port}${basePath}${docsPath}`);
