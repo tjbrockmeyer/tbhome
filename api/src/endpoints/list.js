@@ -15,6 +15,13 @@ function convertList(rows) {
   }));
 }
 
+function convertItem(row) {
+  return {
+    name: row.item_name,
+    description: row.item_description,
+  }
+}
+
 
 module.exports = [
   new Endpoint(
@@ -57,12 +64,14 @@ module.exports = [
     .response(200, responseDoc('List found', schemas.list.listOfLists))
     .response(204, responseDoc('No list could be found'))
     .func(async req => {
-      const {listId} = req.params;
+      const listId = parseInt(req.params.listId);
       const result = await queries.getListByID(listId);
       if(!result.rows.length) {
         return new Response(204);
       }
-      return convertList(result.rows)[0];
+      const l = convertList(result.rows)[0];
+      l.items = result.rows.map(r => convertItem(r));
+      return l;
     }),
 
   /*

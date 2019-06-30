@@ -40,9 +40,10 @@ module.exports = {
 
     getListByID(listId) {
       return [
-        'select l.name as name, close_date, l.description as description, id, li.name as item_name, li.description as item_description',
+        'select l.name as name, close_date, l.description as description, li.name as item_name, li.description as item_description',
         'from list l, list_items li',
-        'where l.id = $1', [listId]
+        'where li.list_id = l.id',
+        '  and l.id = $1', [listId]
       ]
     },
 
