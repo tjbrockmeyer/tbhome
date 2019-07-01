@@ -17,21 +17,30 @@ module.exports = {
         ]
     },
 
-    getLists(listName, openOnly, closeDate) {
+    getLists(listName, openOnly, closeDate, includeItems) {
         const where = [];
         const params = [];
+        const q = [];
+        if(!includeItems) {
+            q.push('select *', 'from list l');
+        } else {
+            q.push(
+              'select l.name as name, close_date, l.description as description, li.name as item_name, li.description as item_description',
+              'from list l, list_items li');
+            where.push('l.id = li.list_id');
+        }
         if(listName) {
-            where.push('list.name = $1');
+            where.push('l.name = $1');
             params.push(listName);
         }
         if(openOnly) {
-            where.push(`list.close_date = $${where.length + 1}`);
+            where.push(`l.close_date = $${where.length + 1}`);
             params.push(zeroDate);
         } else if(closeDate) {
-            where.push(`list.close_date = $${where.length + 1}`);
+            where.push(`l.close_date = $${where.length + 1}`);
             params.push(closeDate);
         }
-        const q = ['select * from list'];
+
         if(where.length) {
             q.push(' where ' + where.join(' and '))
         }

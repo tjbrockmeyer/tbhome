@@ -44,15 +44,21 @@ module.exports = [
     // .security(token.name)
     .param(parameterDoc('listName', 'query', 'The name of the list', false, {type: 'string'}))
     .param(parameterDoc('date', 'query', 'The date of the list (used for retrieving closed lists)', false, {type: 'string', format: 'dateTime'}))
+    .param(parameterDoc('includeItems', 'query', 'Should the list items be included in the results?', false, {type: 'bool', default: false}))
     .response(200, responseDoc('List found', schemas.list.listOfLists))
     .response(204, responseDoc('No list could be found'))
     .func(async req => {
-      const {listName, openOnly, closeDate} = req.query;
-      const result = await queries.getLists(listName, openOnly, closeDate);
+      const {listName, openOnly, closeDate, includeItems} = req.query;
+      const doIncludeItems = includeItems === 'true';
+      const result = await queries.getLists(listName, openOnly, closeDate, doIncludeItems);
       if(!result.rows.length) {
         return new Response(204);
       }
-      return convertList(result.rows);
+      const l = convertList(result.rows)[0];
+      if(doIncludeItems) {
+        l.items = result.rows.map(r => convertItem(r));
+      }
+      return l;
     }),
 
 
