@@ -6,8 +6,22 @@ module.exports = {
 
     createList(listName, description){
         return[
-            'insert into list(name, close_date, description)' +
+            'insert into list(name, close_date, description)',
             'values($1, $2, $3)', [listName, zeroDate, description]
+        ]
+    },
+
+    deleteItemFromList(listId, itemName, itemDescription) {
+        return [
+          'delete from list_items',
+          'where ctid in (',
+          '  select ctid',
+          '  from list_items',
+          '  where list_id = $1',
+          '    and name = $2',
+          '    and description = $3',
+          '  limit 1)',
+          [listId, itemName, itemDescription]
         ]
     },
 
@@ -58,7 +72,7 @@ module.exports = {
 
     createListItem(id, name, description) {
         return[
-            'insert into list_items(list_id, name, description)' +
+            'insert into list_items(list_id, name, description)',
             'values($1, $2, $3)', [id, name, description]
         ]
     }

@@ -27,5 +27,27 @@ module.exports = [
       const description = req.body.description;
 
       await queries.createListItem(id, name, description);
+    }),
+
+  new Endpoint(
+    'DELETE', '/list/{listName}/item', 'List', 'Delete an item from a list',
+    'Delete an item from a particular list, defined by the combination of its name and description')
+    .param(parameters.path.listName)
+    .body(requestBodyDoc('The item to be deleted from the list', true, schemas.list.item.obj))
+    .response(200, responseDoc('Item successfully deleted, or it did not exist'))
+    .response(404, responseDoc('The list did not exist'))
+    .func(async req => {
+      const listName = req.params.listName;
+
+      const result = await queries.getActiveListID(listName);
+      if(result.rows.length === 0) {
+        return new Response(404);
+      }
+
+      const id = result.rows[0].id;
+      const name = req.body.name;
+      const description = req.body.description;
+
+      await queries.deleteItemFromList(id, name, description);
     })
 ];
