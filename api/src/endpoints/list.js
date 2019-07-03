@@ -34,7 +34,6 @@ module.exports = [
     .func(async req => {
       const name = req.params.listName;
       const description = req.body.description;
-
       await queries.createList(name, description);
     }),
 
@@ -61,7 +60,6 @@ module.exports = [
       return l;
     }),
 
-
   new Endpoint(
     'GET', '/list/id/{listId}', 'List', 'Retrieve a list for viewing',
     'Retrieve a list and all of its contents.')
@@ -79,15 +77,4 @@ module.exports = [
       l.items = result.rows.map(r => convertItem(r));
       return l;
     }),
-
-  /*
-  new Endpoint(
-    'DELETE', '/list/{listName}', 'List', 'Delete an existing list',
-    'Delete a list and all of the items on it - permanently.')
-    .security(token.name, token.scopes.delete)
-    .param(parameters.path.listName)
-    .response(200, responseDoc('Successfully deleted the list'))
-    .func(req => {
-
-    })*/
 ];
