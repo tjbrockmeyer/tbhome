@@ -35,6 +35,7 @@ class DataItemList extends React.Component {
     this.deleteConfirmTimeout = null;
     this.dialog = {};
     this.state = {
+      error: null,
       description: null,
       items: null,
       dialogIsOpen: false,
@@ -45,44 +46,54 @@ class DataItemList extends React.Component {
   }
 
   componentDidMount() {
-    getList(this.props.title, true).then(response => {
-      if(this.mounted) {
-        if(!response.body.length) {
-          //list doesn't exist
-          return
+    getList(this.props.title, true).then(
+      response => {
+        if(this.mounted) {
+          if(!response.body.length) {
+            //list doesn't exist
+            return
+          }
+          const {items, description} = response.body[0];
+          this.setState({
+            description,
+            items,
+          })
         }
-        const {items, description} = response.body[0];
-        this.setState({
-          description,
-          items,
-        })
-      }
-    })
+      },
+      error => {
+        this.setState({error: `Could not access the server: ${error}`})
+      })
   }
 
   componentWillUnmount() {
     this.mounted = false;
   }
 
-  closeDialog = (isConfirm) => {
-    if(isConfirm) {
-      if(!this.state.newItemName) {
-        return;
-      }
-      const item = {
-        name: this.state.newItemName,
-        description: this.state.newItemDescription,
-      };
-      addItem(this.props.title, item.name, item.description)
-        .catch(error => {
-          console.error(`could not create item (${item.name}): ${error}`);
-          this.state.items.pop();
-          this.forceUpdate();
-        });
-      this.state.items.push(item);
+  closeDialog = () => {
+    this.setState({dialogIsOpen: false})
+  };
+
+  createRow = () => {
+    const {title} = this.props;
+    const {newItemName, newItemDescription, items} = this.state;
+    if(!newItemName) {
+      return;
     }
+    const item = {
+      name: newItemName,
+      description: newItemDescription,
+    };
+    const index = items.length;
+    addItem(title, item.name, item.description)
+      .catch(error => {
+        console.error(`could not create item (${item.name}): ${error}`);
+        if(items[index].name === newItemName && items[index].description === newItemDescription) {
+          items.pop();
+          this.forceUpdate();
+        }
+      });
+    items.push(item);
     this.setState({
-      dialogIsOpen: false,
       newItemName: '',
       newItemDescription: '',
     })
@@ -114,6 +125,10 @@ class DataItemList extends React.Component {
     }
   };
 
+  deleteAll = () => {
+
+  };
+
   renderRow = (row, index) => {
     const {deleteConfirm} = this.state;
     const {classes, theme} = this.props;
@@ -132,50 +147,56 @@ class DataItemList extends React.Component {
 
   render() {
     const {title, classes} = this.props;
-    const {items, dialogIsOpen} = this.state;
+    const {items, dialogIsOpen, error} = this.state;
     return <Paper className={classes.root}>
       <Dialog scroll='body' open={dialogIsOpen} onClose={() => this.closeDialog()}>
         <DialogTitle id="form-dialog-title">New Item</DialogTitle>
-        <DialogContent onSubmit={() => this.closeDialog(true)}>
+        <DialogContent onSubmit={() => this.createRow()}>
           <TextField
             required
             autoFocus
             margin="dense"
             label="Item Name"
             fullWidth
-            onChange={(e) => (!this.state.newItemName || !e.target.value) && this.setState({newItemName: e.target.value})}
-            onBlur={(e) => this.setState({newItemName: e.target.value})}
+            value={this.state.newItemName}
+            onChange={(e) => this.setState({newItemName: e.target.value})}
           />
           <TextField
             margin="dense"
             id="name"
             label="Item Description"
             fullWidth
-            onBlur={(e) => this.setState({newItemDescription: e.target.value})}
+            value={this.state.newItemDescription}
+            onChange={(e) => this.setState({newItemDescription: e.target.value})}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => this.closeDialog()} color="primary">
             Cancel
           </Button>
-          <Button disabled={!this.state.newItemName} onClick={() => this.closeDialog(true)} color="primary">
+          <Button disabled={!this.state.newItemName} onClick={() => this.createRow()} color="primary">
             Add
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Typography variant='h3'>{title}</Typography>
+      <Typography className={classes.title} variant='h3'>{title}</Typography>
         {
           items !== null
             ?
             <div>
               <div className={classes.buttonRow}>
-                <Button className={classes.createRowButton} size='small' onClick={() => this.setState({dialogIsOpen: true})}>
+                <Button className={classes.createRowButton} size='small' onClick={
+                  () => this.setState({dialogIsOpen: true})}>
                   <AddIcon/>
                   <Typography>New Item</Typography>
                 </Button>
-                <Button className={classes.downloadButton} size='small'
-                        onClick={() => fileDownload(items.map(i => `${i.name} | ${i.description}`).join('\n'), `${title}.txt`)}>
+                <Button size='small' onClick={
+                  () => this.deleteAll()}>
+                  <DeleteIcon/>
+                </Button>
+                <Button size='small' onClick={
+                  () => fileDownload(items.map(i => `${i.name} | ${i.description}`).join('\n'), `${title}.txt`)}>
                   <DLIcon/>
                 </Button>
               </div>
@@ -194,10 +215,15 @@ class DataItemList extends React.Component {
               </Table>
             </div>
             :
-            <div>
-              <Typography>Loading...</Typography>
-              <CircularProgress variant='indeterminate' size={20}/>
-            </div>
+            error === null ?
+              <div>
+                <Typography>Loading...</Typography>
+                <CircularProgress variant='indeterminate' size={20}/>
+              </div>
+              :
+              <div>
+                <Typography>{error}</Typography>
+              </div>
         }
     </Paper>
   }
@@ -208,6 +234,9 @@ export default withStyles(theme => ({
     padding: 16,
     minWidth: 300,
     maxWidth: 300,
+  },
+  title: {
+    marginBottom: 20,
   },
   createRowButton: {
     backgroundColor: theme.palette.primary.main,
@@ -251,7 +280,6 @@ export default withStyles(theme => ({
     paddingRight: 2
   },
   buttonRow: {
-    marginTop: 20,
     display: 'flex',
     justifyContent: 'space-between'
   },
