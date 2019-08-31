@@ -10,10 +10,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {getList} from '../apiClient';
+import fileDownload from 'js-file-download';
 import PropTypes from 'prop-types';
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
+import DLIcon from '@material-ui/icons/CloudDownload'
 import {deleteItem, addItem} from '../apiClient';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -112,7 +114,7 @@ class DataItemList extends React.Component {
     }
   };
 
-  createRow = (row, index) => {
+  renderRow = (row, index) => {
     const {deleteConfirm} = this.state;
     const {classes, theme} = this.props;
 
@@ -167,10 +169,16 @@ class DataItemList extends React.Component {
           items !== null
             ?
             <div>
-              <Button className={classes.createRowButton} size='small' onClick={() => this.setState({dialogIsOpen: true})}>
-                <AddIcon/>
-                <Typography>New Item</Typography>
-              </Button>
+              <div className={classes.buttonRow}>
+                <Button className={classes.createRowButton} size='small' onClick={() => this.setState({dialogIsOpen: true})}>
+                  <AddIcon/>
+                  <Typography>New Item</Typography>
+                </Button>
+                <Button className={classes.downloadButton} size='small'
+                        onClick={() => fileDownload(items.map(i => `${i.name} | ${i.description}`).join('\n'), `${title}.txt`)}>
+                  <DLIcon/>
+                </Button>
+              </div>
 
               <Table className={classes.table}>
                 <TableHead>
@@ -181,7 +189,7 @@ class DataItemList extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody className={classes.content}>
-                  {items.map(this.createRow)}
+                  {items.map(this.renderRow)}
                 </TableBody>
               </Table>
             </div>
@@ -202,7 +210,6 @@ export default withStyles(theme => ({
     maxWidth: 300,
   },
   createRowButton: {
-    marginTop: 20,
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
@@ -242,5 +249,12 @@ export default withStyles(theme => ({
   deleteRowIcon: {
     fontSize: 18,
     paddingRight: 2
+  },
+  buttonRow: {
+    marginTop: 20,
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  downloadButton: {
   }
 }), {withTheme: true})(DataItemList)
