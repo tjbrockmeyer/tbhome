@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production ENV=live node index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js"
   },
   "author": "",

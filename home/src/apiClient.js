@@ -12,13 +12,12 @@ async function request(method, path, query, body, headers) {
   if(body) {
     req.send(body)
   }
-  const response = await req;
-  return response.body;
+  return await req;
 }
 
 
-export async function getList(listName) {
-  return request('get', `/list`, {listName, includeItems: true});
+export async function getList(listName, includeItems) {
+  return request('get', `/list`, {listName, includeItems});
 }
 
 export async function deleteItem(listName, itemName, itemDescription) {
