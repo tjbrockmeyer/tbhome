@@ -1,8 +1,8 @@
 
 export let
-  apiBasePath = 'http://localhost:3001/api/rest';
+  apiBasePath = 'http://localhost:3001/api';
 
 
 if(process.env.NODE_ENV === 'production') {
-  apiBasePath = 'http://tb.home/api/rest';
+  apiBasePath = 'https://tbhome.haiskai.blue/api';
 }

@@ -34,6 +34,7 @@ class DataItemList extends React.Component {
     this.mounted = true;
     this.deleteConfirmTimeout = null;
     this.dialog = {};
+    this.nameFieldRef = React.createRef();
     this.state = {
       error: null,
       description: null,
@@ -96,7 +97,14 @@ class DataItemList extends React.Component {
     this.setState({
       newItemName: '',
       newItemDescription: '',
-    })
+    });
+    this.nameFieldRef.current.focus()
+  };
+
+  handleEnter = e => {
+    if(e.keyCode === 13) {
+      this.createRow()
+    }
   };
 
   deleteRow = (index) => {
@@ -151,8 +159,9 @@ class DataItemList extends React.Component {
     return <Paper className={classes.root}>
       <Dialog scroll='body' open={dialogIsOpen} onClose={() => this.closeDialog()}>
         <DialogTitle id="form-dialog-title">New Item</DialogTitle>
-        <DialogContent onSubmit={() => this.createRow()}>
+        <DialogContent onSubmit={() => this.createRow()} onKeyDown={this.handleEnter}>
           <TextField
+            ref={this.nameFieldRef}
             required
             autoFocus
             margin="dense"
@@ -196,7 +205,8 @@ class DataItemList extends React.Component {
                   <DeleteIcon/>
                 </Button>
                 <Button size='small' onClick={
-                  () => fileDownload(items.map(i => `${i.name} | ${i.description}`).join('\n'), `${title}.txt`)}>
+                  () => fileDownload(items.map(i =>
+                    `${i.name}${i.description !== '' ? ` | ${i.description}` : ''}`).join('\n'), `${title}.txt`)}>
                   <DLIcon/>
                 </Button>
               </div>

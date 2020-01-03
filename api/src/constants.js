@@ -16,8 +16,8 @@ let
 
 
 if(process.env.ENV === 'live') {
-  host = 'tb.home';
-  port = 80;
+  host = 'tbhome.haiskai.blue';
+  port = 443;
   debug = false;
 }
 
