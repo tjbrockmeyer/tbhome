@@ -4,5 +4,5 @@ export let
 
 
 if(process.env.NODE_ENV === 'production') {
-  apiBasePath = 'https://tbhome.haiskai.blue/api';
+  apiBasePath = `${process.env.REACT_APP_DOMAIN_URL}/api`;
 }

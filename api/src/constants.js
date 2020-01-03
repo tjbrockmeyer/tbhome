@@ -16,10 +16,10 @@ let
   };
 
 
-if(process.env.ENV === 'live') {
+if(process.env.NODE_ENV === 'production') {
   host = 'localhost';
   port = 8080;
-  liveUrl = 'https://tbhome.haiskai.blue';
+  liveUrl = process.env.DOMAIN_URL;
   debug = false;
 }
 
