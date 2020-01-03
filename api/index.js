@@ -25,10 +25,11 @@ require('@brockmeyer-tyler/ezjwt').config({debug});
 const spec = new OpenApi3(
   'Home Network API', 'API for storing data on the home network.', '1.0.0',
   [tag('List', 'Add and remove items from lists')],
-  [server(liveUrl, 'tbhome')],
+  [server(liveUrl+basePath, 'tbhome')],
   endpoints, components);
 
 const router = express.Router();
+router.get('/', (req, res) => res.redirect(301, basePath+docsPath));
 router.use(docsPath, spec.docsRouter);
 router.use(apiPath, spec.apiRouter);
 router.use(middleware.errorHandler);
