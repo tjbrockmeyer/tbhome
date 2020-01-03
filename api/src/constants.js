@@ -2,8 +2,9 @@
 let
   host = 'localhost',
   port = 3001,
+  liveUrl = 'http://localhost:3001',
   basePath = '/api',
-  apiPath = '/rest',
+  apiPath = '/',
   docsPath = '/docs',
   debug = true,
   token = {
@@ -16,8 +17,9 @@ let
 
 
 if(process.env.ENV === 'live') {
-  host = 'tbhome.haiskai.blue';
-  port = 443;
+  host = 'localhost';
+  port = 8080;
+  liveUrl = 'https://tbhome.haiskai.blue';
   debug = false;
 }
 
@@ -25,6 +27,7 @@ if(process.env.ENV === 'live') {
 module.exports = {
   host,
   port,
+  liveUrl,
   basePath,
   apiPath,
   docsPath,

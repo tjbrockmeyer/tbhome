@@ -2,7 +2,7 @@
 const {OpenApi3, server, tag} = require('@brockmeyer-tyler/openapi3');
 const express = require('express');
 const cors = require('cors');
-const {host, port, basePath, apiPath, docsPath, debug, token} = require('./src/constants');
+const {host, port, liveUrl, basePath, docsPath, apiPath, debug, token} = require('./src/constants');
 const components = require('./src/components');
 const endpoints = require('./src/endpoints');
 const middleware = require('./src/middleware');
@@ -25,7 +25,7 @@ require('@brockmeyer-tyler/ezjwt').config({debug});
 const spec = new OpenApi3(
   'Home Network API', 'API for storing data on the home network.', '1.0.0',
   [tag('List', 'Add and remove items from lists')],
-  [server(`http://${host}:${port}${basePath}${apiPath}`, 'TB.Home')],
+  [server(liveUrl, 'tbhome')],
   endpoints, components);
 
 const router = express.Router();
@@ -37,5 +37,5 @@ const app = express();
 app.use(cors());
 app.use(basePath, router);
 app.listen(port, host, () => {
-  console.log(`UI at: http://${host}:${port}${basePath}${docsPath}`);
+  console.log(`UI at: ${liveUrl}${basePath}${docsPath}`);
 });
