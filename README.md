@@ -1,5 +1,5 @@
 # Requirements
-* A .env file containing the following variables:
+* For the API: A .env file containing the following variables:
   * API_HOST - The hostname for the api (localhost/192.168.x.x/etc.)
   * API_PORT - The port for the api (80/8080/3001/etc.)
   * DOMAIN_URL - The domain for the api: where the api will be visible to external clients 
@@ -9,6 +9,8 @@
   * PG_USER - The user for the postgres database (usually postgres)
   * PG_PASS - The password for the postgres database
   * PG_NAME - The database name
+* For the Client (home): A .env file containing the following variables:
+  * REACT_APP_API_URL - The full url to access the API. Typically, the same as DOMAIN_URL from above.
 
 ## Lists
 * Open/Closed status.
