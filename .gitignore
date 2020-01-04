@@ -11,10 +11,10 @@
 
 # production
 **/build
-**/export
 
 # misc
 .idea
+**/.env
 **/.DS_Store
 **/.env.local
 **/.env.development.local

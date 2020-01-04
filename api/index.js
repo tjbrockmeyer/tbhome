@@ -2,16 +2,19 @@
 const {OpenApi3, server, tag} = require('@brockmeyer-tyler/openapi3');
 const express = require('express');
 const cors = require('cors');
-const {host, port, liveUrl, basePath, docsPath, apiPath, debug, token} = require('./src/constants');
+const {
+  host, port, liveUrl, basePath, docsPath, apiPath, debug, token,
+  dbHost, dbPort, dbUser, dbPass, dbName
+} = require('./src/constants');
 const components = require('./src/components');
 const endpoints = require('./src/endpoints');
 const middleware = require('./src/middleware');
-const {initQueries, start} = require('@brockmeyer-tyler/psql-client');
+const psql = require('@brockmeyer-tyler/psql-client');
 const queries = require('./src/queries');
 
 
-start('192.168.0.6', 5432, 'postgres', 'psql123', 'home', {logLevel: 1});
-initQueries(queries);
+psql.start(dbHost, dbPort, dbUser, dbPass, dbName, {logLevel: 1});
+psql.initQueries(queries);
 endpoints.forEach(e => {
   e.response(400, components.responses.badRequest);
   e.onResponse(middleware.errorResponseHandler);

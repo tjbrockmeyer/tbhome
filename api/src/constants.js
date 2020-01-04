@@ -1,12 +1,23 @@
 
+require('dotenv').config();
+
 let
-  host = 'localhost',
-  port = 3001,
-  liveUrl = 'http://localhost:3001',
+  host = process.env.API_HOST,
+  port = process.env.API_PORT,
+  liveUrl = process.env.DOMAIN_URL,
+
+  dbHost = process.env.PG_HOST,
+  dbPort = process.env.PG_PORT,
+  dbUser = process.env.PG_USER,
+  dbPass = process.env.PG_PASS,
+  dbName = process.env.PG_NAME,
+
   basePath = '/api',
   apiPath = '/',
   docsPath = '/docs',
+
   debug = true,
+
   token = {
     name: 'token',
     scopes: {
@@ -17,9 +28,6 @@ let
 
 
 if(process.env.NODE_ENV === 'production') {
-  host = 'localhost';
-  port = 8080;
-  liveUrl = process.env.DOMAIN_URL;
   debug = false;
 }
 
@@ -33,4 +41,9 @@ module.exports = {
   docsPath,
   debug,
   token,
+  dbHost,
+  dbPort,
+  dbUser,
+  dbPass,
+  dbName
 };

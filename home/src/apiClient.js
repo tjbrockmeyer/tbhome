@@ -16,20 +16,20 @@ async function request(method, path, query, body, headers) {
 }
 
 
-export async function getList(listName, includeItems) {
-  return request('get', `/list`, {listName, includeItems});
+export async function getList(listName) {
+  return request('get', `/list/${listName}`);
 }
 
-export async function deleteItem(listName, itemName, itemDescription) {
-  return request('delete', `/list/${listName}/item`, undefined, {
-    name: itemName,
-    description: itemDescription,
-  })
+export async function deleteItem(listName, itemName) {
+  return request('delete', `/list/${listName}/item/${itemName}`)
 }
 
 export async function addItem(listName, itemName, itemDescription) {
-  return request('post', `/list/${listName}/item`, undefined, {
-    name: itemName,
+  return request('post', `/list/${listName}/item/${itemName}`, undefined, {
     description: itemDescription,
   })
+}
+
+export async function clearList(listName) {
+  return request('delete', `/list/${listName}/items`);
 }

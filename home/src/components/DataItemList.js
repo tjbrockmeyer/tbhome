@@ -16,7 +16,7 @@ import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import DLIcon from '@material-ui/icons/CloudDownload'
-import {deleteItem, addItem} from '../apiClient';
+import {deleteItem, addItem, clearList} from '../apiClient';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -43,22 +43,26 @@ class DataItemList extends React.Component {
       deleteConfirm: null,
       newItemName: '',
       newItemDescription: '',
+      newItemError: null
     }
   }
 
   componentDidMount() {
     getList(this.props.title, true).then(
       response => {
+        console.log(response);
         if(this.mounted) {
-          if(!response.body.length) {
-            //list doesn't exist
-            return
+          if(!response.body) {
+            this.setState({
+              error: 'List does not exist'
+            });
+            return;
           }
-          const {items, description} = response.body[0];
+          const {items, description} = response.body;
           this.setState({
             description,
             items,
-          })
+          });
         }
       },
       error => {
@@ -71,12 +75,31 @@ class DataItemList extends React.Component {
   }
 
   closeDialog = () => {
-    this.setState({dialogIsOpen: false})
+    this.setState({
+      newItemError: null,
+      dialogIsOpen: false
+    })
   };
 
   createRow = () => {
     const {title} = this.props;
     const {newItemName, newItemDescription, items} = this.state;
+
+    const onFailedToAddItem = (item, error) => {
+      console.error(`could not create item (${item.name}): ${error}`);
+      if(!this.isMounted) {
+        return;
+      }
+      for(let i = 0; i < items.length; i++) {
+        if(items[i] === item) {
+          this.setState({
+            items: items.splice(i, 1)
+          });
+          return;
+        }
+      }
+    };
+
     if(!newItemName) {
       return;
     }
@@ -84,19 +107,19 @@ class DataItemList extends React.Component {
       name: newItemName,
       description: newItemDescription,
     };
-    const index = items.length;
-    addItem(title, item.name, item.description)
-      .catch(error => {
-        console.error(`could not create item (${item.name}): ${error}`);
-        if(items[index].name === newItemName && items[index].description === newItemDescription) {
-          items.pop();
-          this.forceUpdate();
-        }
+    if(items.some(x => x.name === newItemName)) {
+      this.setState({
+        newItemError: `cannot create duplicate item (${item.name})`
       });
+      return;
+    }
+    addItem(title, item.name, item.description)
+      .catch(error => onFailedToAddItem(item, error));
     items.push(item);
     this.setState({
       newItemName: '',
       newItemDescription: '',
+      newItemError: null,
     });
     this.nameFieldRef.current.focus()
   };
@@ -134,7 +157,21 @@ class DataItemList extends React.Component {
   };
 
   deleteAll = () => {
-
+    const {title} = this.props;
+    const oldItems = this.state.items;
+    this.setState({
+      items: [],
+    });
+    clearList(title)
+      .catch(error => {
+        console.error(`failed to clear list: ${error}`);
+        if(!this.mounted) {
+          return;
+        }
+        this.setState(state => ({
+          items: [...oldItems, ...state.items]
+        }))
+      });
   };
 
   renderRow = (row, index) => {
@@ -155,7 +192,7 @@ class DataItemList extends React.Component {
 
   render() {
     const {title, classes} = this.props;
-    const {items, dialogIsOpen, error} = this.state;
+    const {items, dialogIsOpen, error, newItemError} = this.state;
     return <Paper className={classes.root}>
       <Dialog scroll='body' open={dialogIsOpen} onClose={() => this.closeDialog()}>
         <DialogTitle id="form-dialog-title">New Item</DialogTitle>
@@ -178,6 +215,7 @@ class DataItemList extends React.Component {
             value={this.state.newItemDescription}
             onChange={(e) => this.setState({newItemDescription: e.target.value})}
           />
+          {newItemError && <Typography className={classes.newItemerror}>{newItemError}</Typography>}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => this.closeDialog()} color="primary">
@@ -264,6 +302,11 @@ export default withStyles(theme => ({
   },
   row: {
     transition: 'backgroundColor 1s ease, color 1s ease'
+  },
+  newItemError: {
+    padding: 6,
+    backgroundColor: theme.palette.error.light,
+    color: theme.palette.error.contrastText,
   },
   errorBackground: {
     backgroundColor: theme.palette.error.light,

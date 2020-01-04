@@ -18,7 +18,7 @@ class Home extends React.Component {
       </div>
 
       <div>
-        <DataItemList title='Grossery'/>
+        <DataItemList title='Grocery'/>
       </div>
     </div>
   }

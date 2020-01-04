@@ -15,7 +15,8 @@ module.exports = {
   parameters: {
     path: {
       $container: true,
-      listName: parameterDoc('listName', 'path', 'Name of the list to target', true, {type: 'string'})
+      listName: parameterDoc('listName', 'path', 'Name of the list to target', true, {type: 'string'}),
+      itemName: parameterDoc('itemName', 'path', 'Name of the item to target', true, {type: 'string'}),
     }
   },
 
@@ -42,7 +43,7 @@ module.exports = {
     },
     list: {
       $container: true,
-      create: {
+      createDetails: {
         type: 'object',
         properties: {
           description: {type: 'string'}
@@ -50,21 +51,15 @@ module.exports = {
       },
       obj: {
         type: 'object',
-        required: ['id', 'name'],
+        required: ['name'],
         properties: {
-          id: {type: 'integer'},
           name: {type: 'string'},
           description: {type: 'string'},
-          closeDate: {type: 'string', format: 'dateTime'},
           items: {
             type: 'array',
             items: ref('list/item/obj'),
           }
         }
-      },
-      listOfLists: {
-        type: 'array',
-        items: ref('list/obj')
       },
       item: {
         $container: true,
@@ -76,11 +71,10 @@ module.exports = {
             description: {type: 'string'},
           }
         },
-        delete: {
+        createDetails: {
           type: 'object',
-          required: ['name'],
           properties: {
-            name: {type: 'string'},
+            description: {type: 'string'},
           }
         },
       }

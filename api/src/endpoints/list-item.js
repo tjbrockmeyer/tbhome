@@ -7,47 +7,49 @@ const queries = require('../queries');
 
 module.exports = [
   new Endpoint(
-    'POST', '/list/{listName}/item', 'List', 'Add a new item to the list.',
-    'Creates a new item and adds it to the list. Duplicates are allowed.')
+    'POST', '/list/{listName}/item/{itemName}', 'List', 'Add a new item to the list.',
+    'Creates a new item and adds it to the list. Duplicate names are not allowed.')
     //.security(token.name, token.scopes.create)
     .param(parameters.path.listName)
-    .body(requestBodyDoc('The item to add to the list', true, schemas.list.item.obj))
-    .response(200, responseDoc('Successfully added an item to the list.'))
-    .response(404, responseDoc('Aint no list like dat'))
+    .param(parameters.path.itemName)
+    .body(requestBodyDoc('The item to add to the list', true, schemas.list.item.createDetails))
+    .response(201, responseDoc('Successfully added an item to the list.'))
+    .response(409, responseDoc('An item with that name already exists'))
     .func(async req => {
-      const listName = req.params.listName;
-
-      const result = await queries.getActiveListID(listName);
-      if (result.rows.length === 0) {
-        return new Response(404)
-      }
-
-      const id = result.rows[0].id;
-      const name = req.body.name;
+      const {listName, itemName} = req.params;
       const description = req.body.description;
-
-      await queries.createListItem(id, name, description);
+      await queries.createListItem(listName, itemName, description);
+      return new Response(201);
     }),
 
   new Endpoint(
-    'DELETE', '/list/{listName}/item', 'List', 'Delete an item from a list',
-    'Delete an item from a particular list, defined by the combination of its name and description')
+    'DELETE', '/list/{listName}/item/{itemName}', 'List', 'Delete an item from a list',
+    'Delete an item from a particular list by name.')
     .param(parameters.path.listName)
-    .body(requestBodyDoc('The item to be deleted from the list', true, schemas.list.item.obj))
-    .response(200, responseDoc('Item successfully deleted, or it did not exist'))
-    .response(404, responseDoc('The list did not exist'))
+    .param(parameters.path.itemName)
+    .response(204, responseDoc('Item successfully deleted.'))
+    .response(403, responseDoc('Unable to delete the item. Either the list or item does not exist, or permission was denied.'))
     .func(async req => {
-      const listName = req.params.listName;
-
-      const result = await queries.getActiveListID(listName);
-      if(result.rows.length === 0) {
-        return new Response(404);
+      const {listName, itemName} = req.params;
+      const result = await queries.deleteItemFromList(listName, itemName);
+      if(result.rowCount === 0) {
+        return new Response(403);
       }
+      return new Response(204);
+    }),
 
-      const id = result.rows[0].id;
-      const name = req.body.name;
-      const description = req.body.description;
-
-      await queries.deleteItemFromList(id, name, description);
+  new Endpoint(
+    'DELETE', '/list/{listName}/items', 'List', 'Clear all items from a list',
+    'Delete every item from a particular list.')
+    .param(parameters.path.listName)
+    .response(204, responseDoc('Items successfully deleted.'))
+    .response(403, responseDoc('Unable to delete items from the list. Either the list does not exist, it is already empty, or permission was denied.'))
+    .func(async req => {
+      const {listName} = req.params;
+      const result = await queries.clearList(listName);
+      if(result.rowCount === 0) {
+        return new Response(403);
+      }
+      return new Response(204);
     })
 ];
