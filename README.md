@@ -3,7 +3,7 @@
   * API_HOST - The hostname for the api (localhost/192.168.x.x/etc.)
   * API_PORT - The port for the api (80/8080/3001/etc.)
   * DOMAIN_URL - The domain for the api: where the api will be visible to external clients 
-    (scheme://$API_HOST:$API_PORT unless hosting behind a proxy: scheme://subdomain.domain.tld)
+    (scheme://$API_HOST:$API_PORT unless hosting behind a proxy: http(s)://subdomain.domain.tld)
   * PG_HOST - The hostname for the postgres database
   * PG_PORT - The port for the postgres database (usually 5432)
   * PG_USER - The user for the postgres database (usually postgres)

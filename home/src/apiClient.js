@@ -2,7 +2,6 @@ const agent = require('superagent');
 const {apiBasePath} = require('./constants');
 
 async function request(method, path, query, body, headers) {
-  console.log(apiBasePath, path, query, body, headers);
   const req = agent[method](apiBasePath + path);
   if(headers) {
     Object.getOwnPropertyNames(headers).forEach(n => req.set(n, headers[n]))

@@ -50,7 +50,6 @@ class DataItemList extends React.Component {
   componentDidMount() {
     getList(this.props.title, true).then(
       response => {
-        console.log(response);
         if(this.mounted) {
           if(!response.body) {
             this.setState({
